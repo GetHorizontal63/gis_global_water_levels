@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Water Level Explorer</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header class="app-header">
+        <div class="title-block">
+            <span class="eyebrow">Interactive GIS · 01</span>
+            <h1 class="main-title">Water&nbsp;Level Explorer</h1>
+        </div>
+        <div class="header-right">
+            <div class="unit-toggle" role="group" aria-label="Units">
+                <button type="button" class="unit-btn active" data-units="metric">Metric</button>
+                <button type="button" class="unit-btn"        data-units="imperial">Imperial</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <section class="panel level-panel">
+                <span class="panel-num">01</span>
+                <h2 class="panel-heading">Water Level</h2>
+                <div class="level-readout">
+                    <input type="number" id="levelValue" class="level-input"
+                           value="0.00" step="0.25" min="0" max="1000"
+                           aria-label="Water level" />
+                    <span class="unit" id="levelUnit">m</span>
+                </div>
+                <input type="range" id="levelSlider" min="0" max="1000" step="0.25" value="0" />
+                <div class="slider-labels" id="sliderLabels">
+                    <span>0</span><span>+250</span><span>+500</span><span>+750</span><span>+1000&nbsp;m</span>
+                </div>
+                <p class="hint" id="scenarioNote">Current mean sea level — the baseline.</p>
+            </section>
+
+            <section class="panel">
+                <span class="panel-num">02</span>
+                <h2 class="panel-heading">Jump To</h2>
+                <select id="jumpSelect" class="jump-select">
+                    <option value="">— choose a landmark —</option>
+                </select>
+                <div class="coord-jump">
+                    <input type="text" id="coordInput" class="coord-input"
+                           placeholder="lat, lon  (e.g. 40.7128, -74.0060)"
+                           autocomplete="off" spellcheck="false" />
+                    <button type="button" id="coordGo" class="coord-go">Go</button>
+                </div>
+                <p class="hint small" id="coordHint">Or pan and zoom the map freely.</p>
+            </section>
+
+            <section class="panel">
+                <span class="panel-num">03</span>
+                <h2 class="panel-heading">Scenarios</h2>
+                <div class="scenarios" id="scenarios"></div>
+            </section>
+
+            <section class="panel">
+                <span class="panel-num">04</span>
+                <h2 class="panel-heading">Impact In View</h2>
+                <dl class="stats">
+                    <dt>Land flooded in view</dt>
+                    <dd><span id="statArea">0</span> %</dd>
+                    <dt>Landmarks inundated</dt>
+                    <dd><span id="statLandmarks">0</span> / <span id="statLandmarksTotal">0</span></dd>
+                </dl>
+                <ul class="affected" id="affectedList"></ul>
+            </section>
+
+            <section class="panel">
+                <span class="panel-num">05</span>
+                <h2 class="panel-heading">Flood Layer</h2>
+                <label class="toggle">
+                    <input type="checkbox" id="toggleFlood" checked />
+                    <span>Show flood overlay</span>
+                </label>
+                <label class="slider-row">
+                    <span>Opacity</span>
+                    <input type="range" id="opacitySlider" min="0.2" max="1" step="0.05" value="0.75" />
+                </label>
+            </section>
+
+            <section class="panel legend">
+                <span class="panel-num">06</span>
+                <h2 class="panel-heading">Flood Depth</h2>
+                <div class="depth-scale">
+                    <div class="depth-bar" aria-hidden="true"></div>
+                    <div class="depth-ticks">
+                        <span>shallow</span>
+                        <span id="depthMid">—</span>
+                        <span id="depthMax">—</span>
+                    </div>
+                </div>
+                <p class="attribution">
+                    Terrain: Mapzen / AWS Terrain Tiles. Basemap: CARTO + OSM.
+                </p>
+            </section>
+        </aside>
+
+        <section class="map-wrap">
+            <div id="map" role="application" aria-label="Interactive flood map"></div>
+            <div class="map-badge" id="mapBadge">Hover the map to inspect elevation</div>
+        </section>
+    </main>
+
+    <!-- Datasets (plain JS — no CSV parsing needed) -->
+    <script src="data/landmarks.js"></script>
+    <script src="data/scenarios.js"></script>
+
+    <!-- Leaflet runtime -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
