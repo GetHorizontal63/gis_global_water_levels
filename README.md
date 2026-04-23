@@ -71,48 +71,6 @@ The decoded pixel buffer stays cached on the tile element, so slider
 updates only **repaint** — they do not re-download. Dragging the slider
 stays smooth.
 
-## Hosting on GitHub Pages
-
-This is a fully static site, so GitHub Pages can serve it directly with
-no build step:
-
-1. Push the project to a GitHub repository.
-2. In the repo: **Settings → Pages → Source = "Deploy from a branch"**,
-   pick `main` and the `/ (root)` folder, then **Save**.
-3. Wait ~30 seconds. Your site goes live at
-   `https://<your-user>.github.io/<repo-name>/`.
-
-All asset paths in `index.html` are relative, so the same files work
-whether the site is hosted at the root of a custom domain or under a
-project subpath like `/Water_Level_Viz/`. Nothing in the code needs to
-change between local dev and Pages.
-
-The terrain tiles are fetched directly from AWS's public Terrain Tiles
-S3 bucket, which sends `Access-Control-Allow-Origin: *`, so cross-origin
-canvas reads work from any HTTPS origin (including `*.github.io`).
-
-## Local development
-
-You still need an HTTP server locally — opening `index.html` via
-`file://` is blocked by the browser's cross-origin canvas rules. Any
-static server works:
-
-```powershell
-# Python (built into most Windows installs)
-python -m http.server 8765
-# then open http://localhost:8765
-```
-
-```powershell
-# Node alternative
-npx serve .
-```
-
-```
-# VS Code: install the "Live Server" extension, then
-# right-click index.html → "Open with Live Server"
-```
-
 ## Browser support
 
 - Modern Chromium (Chrome, Edge, Brave), Firefox, and Safari all work.
