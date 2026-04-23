@@ -5,14 +5,14 @@ reshape the planet's coastlines. Pan anywhere on Earth, raise the water
 level, and watch real terrain flood in real time.
 
 Stack: **HTML + CSS + JavaScript datasets + Leaflet** (CDN). No build
-step, no backend, no database — just static files. Deploys to GitHub
+step, no backend, no database, just static files. Deploys to GitHub
 Pages out of the box.
 
 ## What it does
 
 - **Real global elevation**: pulls Mapzen / AWS Terrain Tiles
   (terrain-RGB) on demand, decodes each pixel to meters, and paints a
-  flood mask over the actual terrain — not a cartoon.
+  flood mask over the actual terrain, not a cartoon.
 - **Drag the slider** (0–1000 m) to raise or lower the sea anywhere on
   Earth; the mask re-renders in real time with no re-download.
 - **Type a precise level** directly into the readout for exact values.
@@ -23,7 +23,7 @@ Pages out of the box.
 - **Jump-to landmarks**: 40+ preset cities / natural landmarks grouped
   by category in a dropdown.
 - **Free-form lat/lon entry**: jump anywhere by typing coordinates
-  (decimal, DMS, or `40.71N 74.01W` style — all parsed).
+  (decimal, DMS, or `40.71N 74.01W` style, all parsed).
 - **Live impact stats**: % of *land* in view that's underwater (open
   ocean is excluded), plus a list of inundated landmarks sorted by
   depth.
@@ -68,7 +68,7 @@ map tile it:
    transparent.
 
 The decoded pixel buffer stays cached on the tile element, so slider
-updates only **repaint** — they do not re-download. Dragging the slider
+updates only **repaint**, they do not re-download. Dragging the slider
 stays smooth.
 
 ## Browser support
