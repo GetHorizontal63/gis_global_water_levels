@@ -4,32 +4,39 @@ An interactive, browser-only GIS tool for exploring how rising sea levels
 reshape the planet's coastlines. Pan anywhere on Earth, raise the water
 level, and watch real terrain flood in real time.
 
-Stack: **HTML + CSS + JavaScript datasets + Leaflet** (CDN). No build step,
-no backend.
+Stack: **HTML + CSS + JavaScript datasets + Leaflet** (CDN). No build
+step, no backend, no database — just static files. Deploys to GitHub
+Pages out of the box.
 
 ## What it does
 
-- **Real global elevation**: pulls Mapzen / AWS Terrain Tiles (terrain-RGB)
-  on demand, decodes each pixel to meters, and paints a flood mask over
-  the actual terrain — not a cartoon.
-- **Drag the slider** (0–80 m) to raise or lower the sea anywhere in the
-  world; the mask re-renders in real time with no re-download.
+- **Real global elevation**: pulls Mapzen / AWS Terrain Tiles
+  (terrain-RGB) on demand, decodes each pixel to meters, and paints a
+  flood mask over the actual terrain — not a cartoon.
+- **Drag the slider** (0–1000 m) to raise or lower the sea anywhere on
+  Earth; the mask re-renders in real time with no re-download.
+- **Type a precise level** directly into the readout for exact values.
+- **Anti-aliased coastline**: tiles are super-sampled at 2× and
+  bilinear-filtered so flooded edges stay smooth instead of pixelated.
 - **Scenario presets**: king tide, IPCC 2100 pathways, storm surge,
   worst-case ice-sheet collapse.
-- **Jump-to landmarks**: 40+ preset cities / natural landmarks grouped by
-  category in a dropdown.
-- **Live impact stats**: % of the visible area flooded, list of inundated
-  landmarks sorted by depth.
+- **Jump-to landmarks**: 40+ preset cities / natural landmarks grouped
+  by category in a dropdown.
+- **Free-form lat/lon entry**: jump anywhere by typing coordinates
+  (decimal, DMS, or `40.71N 74.01W` style — all parsed).
+- **Live impact stats**: % of *land* in view that's underwater (open
+  ocean is excluded), plus a list of inundated landmarks sorted by
+  depth.
 - **Hover readout**: elevation and local flood depth at the cursor.
-- **Layer controls**: toggle the flood overlay and landmarks; tune flood
-  opacity.
+- **Metric / imperial toggle** for the level readout and tick labels.
+- **Layer controls**: toggle the flood overlay and tune its opacity.
 
 ## Files
 
 ```
 Water_Level_Viz/
 ├── index.html          — page shell + CDN references
-├── styles.css          — dark UI theme, responsive layout
+├── styles.css          — orange/cream Bahnschrift theme, responsive layout
 ├── app.js              — map, custom GridLayer flood renderer, UI wiring
 └── data/
     ├── landmarks.js    — worldwide points of interest
@@ -53,27 +60,65 @@ map tile it:
 
 1. Fetches
    `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`
-2. Draws it to an offscreen canvas and reads the raw pixels
-3. Decodes each pixel:
-   `elevation_m = R*256 + G + B/256 − 32768`
-4. Paints the visible tile canvas: flooded pixels get a depth-coloured
-   blue, dry pixels stay transparent.
+   (with `crossOrigin: 'anonymous'` so pixel data is readable).
+2. Draws it to an offscreen canvas and reads the raw pixels.
+3. Decodes each pixel: `elevation_m = R*256 + G + B/256 − 32768`.
+4. Paints the visible tile canvas at 2× resolution with bilinear
+   sampling: flooded pixels get a depth-coloured blue, dry pixels stay
+   transparent.
 
 The decoded pixel buffer stays cached on the tile element, so slider
 updates only **repaint** — they do not re-download. Dragging the slider
 stays smooth.
 
-## Running it
+## Hosting on GitHub Pages
+
+This is a fully static site, so GitHub Pages can serve it directly with
+no build step:
+
+1. Push the project to a GitHub repository.
+2. In the repo: **Settings → Pages → Source = "Deploy from a branch"**,
+   pick `main` and the `/ (root)` folder, then **Save**.
+3. Wait ~30 seconds. Your site goes live at
+   `https://<your-user>.github.io/<repo-name>/`.
+
+All asset paths in `index.html` are relative, so the same files work
+whether the site is hosted at the root of a custom domain or under a
+project subpath like `/Water_Level_Viz/`. Nothing in the code needs to
+change between local dev and Pages.
+
+The terrain tiles are fetched directly from AWS's public Terrain Tiles
+S3 bucket, which sends `Access-Control-Allow-Origin: *`, so cross-origin
+canvas reads work from any HTTPS origin (including `*.github.io`).
+
+## Local development
+
+You still need an HTTP server locally — opening `index.html` via
+`file://` is blocked by the browser's cross-origin canvas rules. Any
+static server works:
 
 ```powershell
-# Easiest: start a static server at the project root
-python -m http.server 8000
-# then open http://localhost:8000
+# Python (built into most Windows installs)
+python -m http.server 8765
+# then open http://localhost:8765
 ```
 
-Double-clicking `index.html` also works, but some browsers block the
-cross-origin image decoding required to read tile pixels when loaded via
-`file://`. A local server avoids that.
+```powershell
+# Node alternative
+npx serve .
+```
+
+```
+# VS Code: install the "Live Server" extension, then
+# right-click index.html → "Open with Live Server"
+```
+
+## Browser support
+
+- Modern Chromium (Chrome, Edge, Brave), Firefox, and Safari all work.
+- Requires `Canvas.getImageData` and ES2017+ (`async`/`await`).
+- The auto-shrinking level readout uses CSS `field-sizing: content`;
+  older browsers fall back to a fixed-width input.
 
 ## Credits
 
