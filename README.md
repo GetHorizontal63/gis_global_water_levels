@@ -5,8 +5,8 @@ reshape the planet's coastlines. Pan anywhere on Earth, raise the water
 level, and watch real terrain flood in real time.
 
 Stack: **HTML + CSS + JavaScript datasets + Leaflet** (CDN). No build
-step, no backend, no database, just static files. Deploys to GitHub
-Pages out of the box.
+step, no backend, no database, just static files that work on your browser 
+right now!
 
 ## What it does
 
